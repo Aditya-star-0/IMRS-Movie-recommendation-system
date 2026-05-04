@@ -19,10 +19,6 @@ df['Genre'] = df['Genre'].fillna('')
 df['Director'] = df['Director'].fillna('')
 df['Actor 1'] = df['Actor 1'].fillna('')
 df['Actor 2'] = df['Actor 2'].fillna('')
-if 'Poster' not in df.columns:
-    df['Poster'] = np.nan
-else:
-    df['Poster'] = df['Poster'].fillna('')
 
 # Combined features
 df['combined'] = df['Genre'] + ' ' + df['Director'] + ' ' + df['Actor 1'] + ' ' + df['Actor 2']
