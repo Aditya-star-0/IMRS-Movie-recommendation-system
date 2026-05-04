@@ -34,15 +34,23 @@ cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 # Function to get recommendations based on movie
 def get_recommendations(movie_title, cosine_sim=cosine_sim):
-    try:
-        idx = df[df['Name'] == movie_title].index[0]
-        sim_scores = list(enumerate(cosine_sim[idx]))
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:101]  # Top 100 similar
-        movie_indices = [i[0] for i in sim_scores]
-        return df.iloc[movie_indices].copy()
-    except IndexError:
+    if not movie_title:
         return pd.DataFrame()
+
+    movie_title_clean = movie_title.strip().lower()
+    matching_rows = df[df['Name'].str.lower() == movie_title_clean]
+    if matching_rows.empty:
+        matching_rows = df[df['Name'].str.lower().str.contains(movie_title_clean, na=False)]
+
+    if matching_rows.empty:
+        return pd.DataFrame()
+
+    idx = matching_rows.index[0]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:101]  # Top 100 similar
+    movie_indices = [i[0] for i in sim_scores]
+    return df.iloc[movie_indices].copy()
 
 # Function to apply filters
 def apply_filters(rec_df, genre, actor, director):
